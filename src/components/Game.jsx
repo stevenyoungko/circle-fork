@@ -10,6 +10,7 @@ class Game extends React.Component {
       }],
       xIsNext: true,
       stepNumber: 0,
+      locationList: ['start']
     }
   }
 
@@ -20,6 +21,7 @@ class Game extends React.Component {
     if (calculateWinner(squares) || squares[i]) {
       return
     }
+    this.state.locationList.push(calculateLocation(i))
     squares[i] = this.state.xIsNext ? 'X' : 'O'
     this.setState({
       history: history.concat([{
@@ -27,6 +29,7 @@ class Game extends React.Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
+      locationList: this.state.locationList
     })
   }
 
@@ -48,7 +51,10 @@ class Game extends React.Component {
         'Go to game start'
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <div>
+            <button onClick={() => this.jumpTo(move)} style={{ marginRight: '4px' }}>{desc}</button>
+            <span>({ this.state.locationList[move] })</span>
+          </div>
         </li>
       )
     })
@@ -75,6 +81,21 @@ class Game extends React.Component {
       </div>
     )
   }
+}
+
+function calculateLocation(index) {
+  const list = [
+    '0,0',
+    '0,1',
+    '0,2',
+    '1,0',
+    '1,1',
+    '1,2',
+    '2,0',
+    '2,1',
+    '2,2'
+  ]
+  return list[index]
 }
 
 function calculateWinner(squares) {
