@@ -14,7 +14,8 @@ class Game extends React.Component {
         index: null,
         location: 'start'
       }],
-      pointIndex: undefined
+      pointIndex: undefined,
+      isLastStep: true
     }
   }
 
@@ -25,10 +26,15 @@ class Game extends React.Component {
     if (calculateWinner(squares) || squares[i]) {
       return
     }
+    if (!this.state.isLastStep) {
+      this.state.locationList = this.state.locationList.slice(0, this.state.stepNumber + 1)
+    }
+
     this.state.locationList.push({
       index: i,
       location: calculateLocation(i)
     })
+
     squares[i] = this.state.xIsNext ? 'X' : 'O'
     this.setState({
       history: history.concat([{
@@ -36,7 +42,8 @@ class Game extends React.Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      locationList: this.state.locationList
+      locationList: this.state.locationList,
+      pointIndex: i
     })
   }
 
@@ -44,7 +51,8 @@ class Game extends React.Component {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
-      pointIndex: pointIndex
+      pointIndex: pointIndex,
+      isLastStep: step + 1 === this.state.locationList.length
     })
   }
 
