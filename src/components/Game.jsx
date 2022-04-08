@@ -10,7 +10,11 @@ class Game extends React.Component {
       }],
       xIsNext: true,
       stepNumber: 0,
-      locationList: ['start']
+      locationList: [{
+        index: null,
+        location: 'start'
+      }],
+      pointIndex: undefined
     }
   }
 
@@ -21,7 +25,10 @@ class Game extends React.Component {
     if (calculateWinner(squares) || squares[i]) {
       return
     }
-    this.state.locationList.push(calculateLocation(i))
+    this.state.locationList.push({
+      index: i,
+      location: calculateLocation(i)
+    })
     squares[i] = this.state.xIsNext ? 'X' : 'O'
     this.setState({
       history: history.concat([{
@@ -33,10 +40,11 @@ class Game extends React.Component {
     })
   }
 
-  jumpTo(step) {
+  jumpTo(step, pointIndex) {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
+      pointIndex: pointIndex
     })
   }
 
@@ -44,16 +52,21 @@ class Game extends React.Component {
     const history = this.state.history
     const current = history[this.state.stepNumber]
     const winner = calculateWinner(current.squares)
-
+    
     const moves = history.map((step, move) => {
-      const desc = move ?
-        'Go to move #' + move :
-        'Go to game start'
+      const handleActive = this.state.pointIndex === this.state.locationList[move].index
+      const desc = move ? 'Go to move #' + move : 'Go to game start'
       return (
         <li key={move}>
           <div>
-            <button onClick={() => this.jumpTo(move)} style={{ marginRight: '4px' }}>{desc}</button>
-            <span>({ this.state.locationList[move] })</span>
+            <button 
+              className={handleActive ? 'is-active' : '' }
+              onClick={() => this.jumpTo(move, this.state.locationList[move].index)} 
+              style={{ margin: '6px' }}
+            >
+              {desc}
+            </button>
+            <span>({ this.state.locationList[move].location })</span>
           </div>
         </li>
       )
