@@ -6,6 +6,7 @@ class Game extends React.Component {
     super(props)
     this.state = {
       history: [{
+        sort: 0,
         squares: Array(9).fill(null),
       }],
       xIsNext: true,
@@ -15,7 +16,8 @@ class Game extends React.Component {
         location: 'start'
       }],
       pointIndex: undefined,
-      isLastStep: true
+      isLastStep: true,
+      order: 'asc'
     }
   }
 
@@ -28,6 +30,7 @@ class Game extends React.Component {
     }
     if (!this.state.isLastStep) {
       this.state.locationList = this.state.locationList.slice(0, this.state.stepNumber + 1)
+      this.state.isLastStep = true
     }
 
     this.state.locationList.push({
@@ -39,6 +42,7 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{
         squares: squares,
+        sort: this.state.stepNumber + 1
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
@@ -47,34 +51,47 @@ class Game extends React.Component {
     })
   }
 
+  handleOrder() {
+    this.setState({
+      order: this.state.order === 'asc' ? 'desc' : 'asc'
+    })
+  }
+
   jumpTo(step, pointIndex) {
     this.setState({
       stepNumber: step,
       xIsNext: (step % 2) === 0,
       pointIndex: pointIndex,
-      isLastStep: step + 1 === this.state.locationList.length
+      isLastStep: step === this.state.locationList.length - 1
     })
   }
 
   render() {
-    const history = this.state.history
+    let history = this.state.history
+    let locationList = this.state.locationList
     const current = history[this.state.stepNumber]
     const winner = calculateWinner(current.squares)
+
+    if (this.state.order === 'desc') {
+      history = [...history].reverse()
+      locationList = [...locationList].reverse()
+    }
+
     
     const moves = history.map((step, move) => {
-      const handleActive = this.state.pointIndex === this.state.locationList[move].index
-      const desc = move ? 'Go to move #' + move : 'Go to game start'
+      const handleActive = this.state.pointIndex === locationList[move].index
+      const desc = step.sort !== 0 ? 'Go to move #' + step.sort : 'Go to game start'
       return (
         <li key={move}>
           <div>
             <button 
               className={handleActive ? 'is-active' : '' }
-              onClick={() => this.jumpTo(move, this.state.locationList[move].index)} 
+              onClick={() => this.jumpTo(step.sort, locationList[move].index)} 
               style={{ margin: '6px' }}
             >
               {desc}
             </button>
-            <span>({ this.state.locationList[move].location })</span>
+            <span>({ locationList[move].location })</span>
           </div>
         </li>
       )
@@ -98,6 +115,9 @@ class Game extends React.Component {
         <div className="game-info">
           <div>{status}</div>
           <ol>{moves}</ol>
+        </div>
+        <div className='game-info'>
+          <button disabled={history.length < 3} onClick={() => this.handleOrder() }>{ this.state.order === 'asc' ? '由大到小' : '由小到大'}</button>
         </div>
       </div>
     )
