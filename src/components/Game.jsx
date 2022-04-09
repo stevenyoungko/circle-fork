@@ -60,6 +60,25 @@ class Game extends React.Component {
     })
   }
 
+  restart() {
+    this.setState({
+      history: [{
+        sort: 0,
+        squares: Array(9).fill(null),
+      }],
+      xIsNext: true,
+      stepNumber: 0,
+      locationList: [{
+        index: null,
+        location: 'start'
+      }],
+      pointIndex: undefined,
+      isLastStep: true,
+      order: 'asc',
+      victoryList: []
+    })
+  }
+
   handleOrder() {
     this.setState({
       order: this.state.order === 'asc' ? 'desc' : 'asc'
@@ -121,7 +140,18 @@ class Game extends React.Component {
     return (
       <div className="game">
         <div className='game-function'>
-          <button className={`button function-button ${order}`} disabled={history.length < 3} onClick={() => this.handleOrder() }>{ this.state.order === 'asc' ? '由大到小' : '由小到大'}</button>
+          <button 
+            className={`button function-button ${order}`} 
+            disabled={history.length < 3} 
+            onClick={() => this.handleOrder() }
+          >{ this.state.order === 'asc' ? '由大到小' : '由小到大'}</button>
+          <button 
+            className='button function-button'
+            style={{ marginLeft: '12px' }}
+            onClick={() => this.restart()}
+          >
+            重新開始
+          </button>
         </div>
         <div className="game-board">
           <Board
