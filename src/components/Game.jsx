@@ -26,15 +26,17 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const current = history[history.length - 1]
     const squares = current.squares.slice()
+    let isLastStep = this.state.isLastStep
+    let locationList = this.state.locationList
     // 如果勝負已經揭曉，或者某個 Square 已經被填滿了
     if (calculateWinner(squares) || squares[i]) {
       return
     }
-    if (!this.state.isLastStep) {
-      this.state.locationList = this.state.locationList.slice(0, this.state.stepNumber + 1)
-      this.state.isLastStep = true
+    if (!isLastStep) {
+      locationList = this.state.locationList.slice(0, this.state.stepNumber + 1)
+      isLastStep = true
     }
-    this.state.locationList.push({
+    locationList.push({
       index: i,
       location: calculateLocation(i)
     })
@@ -51,9 +53,10 @@ class Game extends React.Component {
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
-      locationList: this.state.locationList,
+      locationList: locationList,
       pointIndex: i,
-      victoryList
+      victoryList,
+      isLastStep
     })
   }
 
