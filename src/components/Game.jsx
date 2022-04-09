@@ -88,13 +88,13 @@ class Game extends React.Component {
 
     
     const moves = history.map((step, move) => {
-      const handleActive = this.state.pointIndex === locationList[move].index
+      const handleActive = this.state.pointIndex === locationList[move].index ? 'is-active' : ''
       const desc = step.sort !== 0 ? 'Go to move #' + step.sort : 'Go to game start'
       return (
         <li key={move}>
           <div>
-            <button 
-              className={handleActive ? 'is-active' : '' }
+            <button
+              className={`button ${handleActive}`}
               onClick={() => this.jumpTo(step.sort, locationList[move].index)} 
               style={{ margin: '6px' }}
             >
@@ -116,8 +116,13 @@ class Game extends React.Component {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
     }
 
+    const order = this.state.order === 'asc' ? 'is-asc' : 'is-desc'
+
     return (
       <div className="game">
+        <div className='game-function'>
+          <button className={`button function-button ${order}`} disabled={history.length < 3} onClick={() => this.handleOrder() }>{ this.state.order === 'asc' ? '由大到小' : '由小到大'}</button>
+        </div>
         <div className="game-board">
           <Board
             isLastStep={this.state.isLastStep}
@@ -127,11 +132,8 @@ class Game extends React.Component {
           />
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          <div class="game-info-text">{status}</div>
           <ol>{moves}</ol>
-        </div>
-        <div className='game-info'>
-          <button disabled={history.length < 3} onClick={() => this.handleOrder() }>{ this.state.order === 'asc' ? '由大到小' : '由小到大'}</button>
         </div>
       </div>
     )
