@@ -53,3 +53,7 @@ ol, ul {
   background-color: black;
   color: white;
 }
+
+.is-victory {
+  background-color: yellow;
+}

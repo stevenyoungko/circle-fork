@@ -7,6 +7,8 @@ function Board(props) {
       <Square
         key={i}
         value={props.squares[i]}
+        isVictory={props.victoryList.includes(i)}
+        isLastStep={props.isLastStep}
         onClick={() => props.onClick(i)} 
       />
     )

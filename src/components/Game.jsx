@@ -17,7 +17,8 @@ class Game extends React.Component {
       }],
       pointIndex: undefined,
       isLastStep: true,
-      order: 'asc'
+      order: 'asc',
+      victoryList: []
     }
   }
 
@@ -25,6 +26,7 @@ class Game extends React.Component {
     const history = this.state.history.slice(0, this.state.stepNumber + 1)
     const current = history[history.length - 1]
     const squares = current.squares.slice()
+    // 如果勝負已經揭曉，或者某個 Square 已經被填滿了
     if (calculateWinner(squares) || squares[i]) {
       return
     }
@@ -32,22 +34,26 @@ class Game extends React.Component {
       this.state.locationList = this.state.locationList.slice(0, this.state.stepNumber + 1)
       this.state.isLastStep = true
     }
-
     this.state.locationList.push({
       index: i,
       location: calculateLocation(i)
     })
-
     squares[i] = this.state.xIsNext ? 'X' : 'O'
+    
+    let victoryList = []
+    if (calculateWinner(squares)) {
+      victoryList = calculateWinner(squares)
+    }
     this.setState({
       history: history.concat([{
-        squares: squares,
+        squares,
         sort: this.state.stepNumber + 1
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
       locationList: this.state.locationList,
-      pointIndex: i
+      pointIndex: i,
+      victoryList
     })
   }
 
@@ -98,6 +104,7 @@ class Game extends React.Component {
     })
 
     let status
+
     if (winner) {
       status = 'Winner: ' + winner
     } else {
@@ -108,6 +115,8 @@ class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board
+            isLastStep={this.state.isLastStep}
+            victoryList={this.state.victoryList}
             squares={current.squares}
             onClick={(i) => this.handleClick(i)}
           />
@@ -154,7 +163,7 @@ function calculateWinner(squares) {
     const [a, b, c] = lines[i]
     // 判斷ooxx
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a]
+      return [a,b,c]
     }
   }
   return null
